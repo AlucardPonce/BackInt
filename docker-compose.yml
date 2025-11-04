@@ -10,6 +10,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      HOST: 0.0.0.0
       # Agrega tus variables aquí o usa env_file
     env_file:
       - .env.production
