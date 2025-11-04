@@ -1,5 +1,9 @@
 name: Backend CI/CD
 
+concurrency:
+  group: backend-ci
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ main ]
@@ -29,11 +33,15 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
+    - name: Derive lowercase owner
+      shell: bash
+      run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/${{ toLower(github.repository_owner) }}/backint
+        images: ghcr.io/${{ env.OWNER_LC }}/backint
         tags: |
           type=raw,value=latest
           type=sha,format=short
@@ -45,8 +53,8 @@ jobs:
         push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=registry,ref=ghcr.io/${{ toLower(github.repository_owner) }}/backint:buildcache
-        cache-to: type=registry,ref=ghcr.io/${{ toLower(github.repository_owner) }}/backint:buildcache,mode=max
+        cache-from: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/backint:buildcache
+        cache-to: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/backint:buildcache,mode=max
 
   deploy:
     name: Deploy to VPS
