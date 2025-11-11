@@ -20,8 +20,8 @@ COPY . .
 # Cambiar al usuario no-root
 USER nodejs
 
-# Exponer puerto (alineado con PORT=3000)
-EXPOSE 3000
+# Exponer puerto (alineado con PORT=3001)
+EXPOSE 3001
 
 # Usar dumb-init
 ENTRYPOINT ["dumb-init", "--"]
